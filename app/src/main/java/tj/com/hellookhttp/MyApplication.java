@@ -2,6 +2,10 @@ package tj.com.hellookhttp;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
+import com.tj.download.DownloadConfig;
+import com.tj.download.DownloadManager;
+import com.tj.download.db.DownloadHelper;
 import com.tj.download.file.FileStorageManager;
 import com.tj.download.http.HttpManager;
 
@@ -15,5 +19,14 @@ public class MyApplication extends Application {
         super.onCreate();
         FileStorageManager.getInstance().init(this);
         HttpManager.getInstance().init(this);
+        Stetho.initializeWithDefaults(this);
+        DownloadHelper.getInstance().init(this);
+
+        DownloadConfig config = new DownloadConfig.Builder()
+                .setCoreThreadSize(2)
+                .setMaxThreadSize(4)
+                .setLocalProgressThreadSize(1)
+                .builder();
+        DownloadManager.getInstance().init(config);
     }
 }

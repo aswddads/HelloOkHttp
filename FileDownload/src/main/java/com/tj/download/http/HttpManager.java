@@ -24,6 +24,8 @@ public class HttpManager {
     public static HttpManager sManager = new HttpManager();
     public static final int NETWORK_CODE = 1;
     public static final int CONTENT_LENGTH_CODE_ERROR = 2;
+    public static final int TASK_RUNNING_ERROR_CODE = 3;
+
 
     private Context mContext;
 
@@ -71,6 +73,7 @@ public class HttpManager {
 
     public void asyncRequest(final String url,final Callback callback){
         final Request request = new Request.Builder().url(url).build();
+        mClient.newCall(request).enqueue(callback);
     }
     public void asyncRequest(final String url, final DownloadCallback callback) {
         final Request request = new Request.Builder().url(url).build();
