@@ -1,8 +1,11 @@
 package com.tj.download;
 
+import com.tj.download.db.DownloadEntity;
+import com.tj.download.db.DownloadHelper;
 import com.tj.download.file.FileStorageManager;
 import com.tj.download.http.DownloadCallback;
 import com.tj.download.http.HttpManager;
+import com.tj.download.utills.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,6 +29,16 @@ public class DownloadRunnable implements Runnable {
 
     private DownloadCallback mCallback;
 
+    private DownloadEntity mEntity;
+
+    public DownloadRunnable(long mStart, long mEend, String mUrl, DownloadCallback mCallback, DownloadEntity mEntity) {
+        this.mStart = mStart;
+        this.mEend = mEend;
+        this.mUrl = mUrl;
+        this.mCallback = mCallback;
+        this.mEntity = mEntity;
+    }
+
     public DownloadRunnable(long mStart, long mEend, String mUrl, DownloadCallback mCallback) {
         this.mStart = mStart;
         this.mEend = mEend;
@@ -42,8 +55,12 @@ public class DownloadRunnable implements Runnable {
         }
 
         File file = FileStorageManager.getInstance().getFileByName(mUrl);
+
+        long progress=0;
         try {
             RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rwd");
+
+            randomAccessFile.seek(mStart);
 
             byte[] buffer = new byte[1024 * 500];
             int len;
@@ -51,15 +68,21 @@ public class DownloadRunnable implements Runnable {
             while((len=inStream.read(buffer,0,buffer.length))!=-1){
                 try {
                     randomAccessFile.write(buffer,0,len);
+                    progress+=len;
+                    mEntity.setProgress_position(progress);
+                    Logger.debug("tanjun","progress---->"+progress);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+            randomAccessFile.close();
             mCallback.success(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            DownloadHelper.getInstance().insert(mEntity);
         }
 
 

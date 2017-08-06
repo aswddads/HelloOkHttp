@@ -2,53 +2,93 @@ package tj.com.hellookhttp;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
-import com.tj.download.file.FileStorageManager;
+import com.tj.download.DownloadManager;
 import com.tj.download.http.DownloadCallback;
-import com.tj.download.http.HttpManager;
 import com.tj.download.utills.Logger;
 
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
-    private ImageView imageView;
+    private ImageView mImageView;
+
+    private ImageView mImageView1;
+
+    private ProgressBar mProgress;
+
+    private int count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        imageView = (ImageView) findViewById(R.id.image);
+        mImageView = (ImageView) findViewById(R.id.image);
+        mProgress = (ProgressBar) findViewById(R.id.progress);
 
-        File file=FileStorageManager.getInstance().getFileByName("http://www.qq.com");
-        Logger.debug("tanjun","file path = "+file.getAbsoluteFile());
+        //File file=FileStorageManager.getInstance().getFileByName("http://www.qq.com");
+       // Logger.debug("tanjun","file
+        // path = "+file.getAbsoluteFile());
 
-        HttpManager.getInstance().asyncRequest("https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png"
-                , new DownloadCallback() {
-                    @Override
-                    public void success(File file) {
-                        final Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+//        HttpManager.getInstance().asyncRequest("https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png"
+//                , new DownloadCallback() {
+//                    @Override
+//                    public void success(File file) {
+//                        final Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                imageView.setImageBitmap(bitmap);
+//                            }
+//                        });
+//                        Logger.debug("tanjun","success :"+file.getAbsoluteFile());
+//                    }
+//
+//                    @Override
+//                    public void fail(int errorCode, String errorMessage) {
+//                        Logger.debug("tanjun","fail :"+errorCode+" "+errorMessage);
+//                    }
+//
+//                    @Override
+//                    public void progress(int progress) {
+//
+//                    }
+//                });
+        DownloadManager.getInstance().download("http://szimg.mukewang.com/59118b92000147bf05400300-360-202.jpg", new DownloadCallback() {
+            @Override
+            public void success(File file) {
+
+                if (count<1){
+                    count++;
+                    return;
+                }
+
+                final Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                imageView.setImageBitmap(bitmap);
+                                mImageView.setImageBitmap(bitmap);
                             }
                         });
-                        Logger.debug("tanjun","success :"+file.getAbsoluteFile());
-                    }
 
-                    @Override
-                    public void fail(int errorCode, String errorMessage) {
-                        Logger.debug("tanjun","fail :"+errorCode+" "+errorMessage);
-                    }
+                Logger.debug("tanjun","success :"+file.getAbsoluteFile());
+            }
 
-                    @Override
-                    public void progress(int progress) {
+            @Override
+            public void fail(int errorCode, String errorMessage) {
+                Logger.debug("tanjun","fail :"+errorCode+" "+errorMessage);
+            }
 
-                    }
-                });
+            @Override
+            public void progress(int progress) {
+                Logger.debug("tanjun","progress :"+progress);
+                mProgress.setProgress(progress);
+
+            }
+        });
     }
 }
