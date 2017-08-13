@@ -12,6 +12,12 @@ import com.tj.download.http.DownloadCallback;
 import com.tj.download.utills.Logger;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import tj.com.http.service.TJAPIProvider;
+import tj.com.http.service.TJRequest;
+import tj.com.http.service.TJResponse;
 
 public class MainActivity extends AppCompatActivity {
     private ImageView mImageView;
@@ -29,6 +35,22 @@ public class MainActivity extends AppCompatActivity {
 
         mImageView = (ImageView) findViewById(R.id.image);
         mProgress = (ProgressBar) findViewById(R.id.progress);
+
+        Map<String,String> map = new HashMap<>();
+        map.put("username","tanjun");
+        map.put("userage","20");
+
+        TJAPIProvider.helloworld("", map, new TJResponse<String>() {
+            @Override
+            public void success(TJRequest request, String data) {
+                Logger.debug("tanjun","success="+data);
+            }
+
+            @Override
+            public void fail(int errorCode, String errorMessage) {
+
+            }
+        });
 
         //File file=FileStorageManager.getInstance().getFileByName("http://www.qq.com");
        // Logger.debug("tanjun","file

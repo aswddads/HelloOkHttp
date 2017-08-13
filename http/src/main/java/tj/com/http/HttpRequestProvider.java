@@ -22,6 +22,8 @@ public class HttpRequestProvider {
 
         if (OKHTTP_REQUEST) {
             mHttpRequestFactory = new OkHttpRequestFactory();
+        }else {
+            mHttpRequestFactory= new OriginHttpRequestFactory();
         }
 
     }
